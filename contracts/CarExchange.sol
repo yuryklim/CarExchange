@@ -16,7 +16,9 @@ contract CarExchange {
 
   // register a car
   //_vinNumber is a Vehicle Identification Number
-  function register(address _owner, string _vinNumber ) public returns (bool){
+  // start of implementation function register(address _owner, string _vinNumber)
+
+  function register(address _owner, string _vinNumber) public returns (bool){
     require(!hasCar(_vinNumber));
     require(carNameIndex + 1 > carNameIndex);
     carNameIndex++;
@@ -42,6 +44,7 @@ contract CarExchange {
         }
         return 0;
     }
+  // end of implementation function register(address _owner, string _vinNumber)
 
   // buy a car by _vinNumber that is listed for sale
   function buy(uint _vinNumber, uint _value) public returns (bool success){
