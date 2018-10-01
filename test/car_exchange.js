@@ -10,6 +10,7 @@ contract('CarExchange', function(accounts) {
             assert.equal(txResult.logs[0].event, "Registered", "Registered event should be emitted");
         });
   });
+
   it("should be possible to register a new car with the same account", function() {
         var myCarExchangeInstance;
         return carExchange.deployed().then(function (instance) {
@@ -20,6 +21,7 @@ contract('CarExchange', function(accounts) {
             assert.equal(txResult.logs[0].event, "Registered", "Registered event should be emitted");
         });
   });
+
   it("should be possible to register a new car with another account", function() {
         var myCarExchangeInstance;
         return carExchange.deployed().then(function (instance) {
@@ -29,5 +31,32 @@ contract('CarExchange', function(accounts) {
             console.log(txResult);
             assert.equal(txResult.logs[0].event, "Registered", "Registered event should be emitted");
         });
+  });
+
+  it("should revert if we try to register the car with the vinNumber that already exists", async() => {
+    let instant = await carExchange.deployed();
+    try{
+      await instant.register(accounts[1], "1HGBH41JXMN109188");
+    } catch(e){
+      assert.equal(e.message, "VM Exception while processing transaction: revert", "Error should be throwed");
+    }
+  });
+
+  it("should revert if we try to register the car with the vinNumber that is less then 17 characters", async() => {
+    let instant = await carExchange.deployed();
+    try{
+      await instant.register(accounts[1], "1HGBH41JXMN");
+    } catch(e){
+      assert.equal(e.message, "VM Exception while processing transaction: revert", "Error should be throwed");
+    }
+  });
+
+  it("should revert if we try to register the car with the vinNumber that is higher then 17 characters", async() => {
+    let instant = await carExchange.deployed();
+    try{
+      await instant.register(accounts[1], "1HGBH41JXMN109188909");
+    } catch(e){
+      assert.equal(e.message, "VM Exception while processing transaction: revert", "Error should be throwed");
+    }
   });
 });
