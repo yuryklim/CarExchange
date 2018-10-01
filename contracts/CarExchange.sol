@@ -10,17 +10,19 @@ contract CarExchange {
   uint carNameIndex;
 
   //EVENTS//
-  event Registered(string indexed _vinNumber, address indexed _owner);
-  event Bought(uint indexed _vinNumber, address indexed _oldOwner, address indexed _newOwner, uint _value);
-  event Listed(uint indexed _vinNumber, address indexed _carOwner, uint _value);
+  event Registered(string _vinNumber, address indexed _owner);
+//  event Bought(uint indexed _vinNumber, address indexed _oldOwner, address indexed _newOwner, uint _value);
+//  event Listed(uint indexed _vinNumber, address indexed _carOwner, uint _value);
 
   // register a car
-  //_vinNumber is a Vehicle Identification Number
+  //_vinNumber is a Vehicle Identification Number and contains 17 characters (digits and capital letters)
   // start of implementation function register(address _owner, string _vinNumber)
 
   function register(address _owner, string _vinNumber) public returns (bool){
     require(!hasCar(_vinNumber));
     require(carNameIndex + 1 > carNameIndex);
+    bytes memory str = bytes(_vinNumber);
+    require(str.length == 17);
     carNameIndex++;
     registeredCars[carNameIndex].carOwner = _owner;
     registeredCars[carNameIndex].vinNumber = _vinNumber;
@@ -47,19 +49,19 @@ contract CarExchange {
   // end of implementation function register(address _owner, string _vinNumber)
 
   // buy a car by _vinNumber that is listed for sale
-  function buy(uint _vinNumber, uint _value) public returns (bool success){
+  /* function buy(uint _vinNumber, uint _value) public returns (bool success){
 
-  }
+  } */
 
   // list a car for sale by _vinNumber
-  function list(uint _vinNumber, uint _value) public returns (bool success){
+  /* function list(uint _vinNumber, uint _value) public returns (bool success){
 
-  }
+  } */
 
   // ownedCars display a list of cars belonging to an owner
-  function ownedCars( address _owner) external view returns (uint[] vinNumbers){
+  /* function ownedCars( address _owner) external view returns (uint[] vinNumbers){
 
-  }
+  } */
 
 
 
