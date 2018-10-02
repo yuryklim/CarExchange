@@ -2,7 +2,9 @@ pragma solidity ^0.4.24;
 
 //  TODO: uze OpenZeppelin, implement as Ownable, use SafeMath for uint256
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 contract CarExchange is Ownable {
+  using SafeMath for uint256;
   struct Car {
     address carOwner;
     string vinNumber;
