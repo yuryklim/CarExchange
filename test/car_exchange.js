@@ -6,7 +6,7 @@ contract('CarExchange', function(accounts) {
             myCarExchangeInstance = instance;
             return myCarExchangeInstance.register(accounts[0], "1HGBH41JXMN109186");
         }).then(function (txResult) {
-            console.log(txResult);
+            //console.log(txResult);
             assert.equal(txResult.logs[0].event, "Registered", "Registered event should be emitted");
         });
   });
@@ -17,7 +17,7 @@ contract('CarExchange', function(accounts) {
             myCarExchangeInstance = instance;
             return myCarExchangeInstance.register(accounts[0], "1HGBH41JXMN109187");
         }).then(function (txResult) {
-            console.log(txResult);
+            //console.log(txResult);
             assert.equal(txResult.logs[0].event, "Registered", "Registered event should be emitted");
         });
   });
@@ -28,7 +28,7 @@ contract('CarExchange', function(accounts) {
             myCarExchangeInstance = instance;
             return myCarExchangeInstance.register(accounts[1], "1HGBH41JXMN109188");
         }).then(function (txResult) {
-            console.log(txResult);
+            //console.log(txResult);
             assert.equal(txResult.logs[0].event, "Registered", "Registered event should be emitted");
         });
   });
