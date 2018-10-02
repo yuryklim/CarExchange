@@ -38,7 +38,7 @@ contract('CarExchange', function(accounts) {
     try{
       await instant.register(accounts[1], "1HGBH41JXMN109188");
     } catch(e){
-      assert.equal(e.message, "VM Exception while processing transaction: revert", "Error should be throwed");
+      assert.equal(e.message, "VM Exception while processing transaction: revert vin is already registered", "Error should be throwed");
     }
   });
 
@@ -47,7 +47,7 @@ contract('CarExchange', function(accounts) {
     try{
       await instant.register(accounts[1], "1HGBH41JXMN");
     } catch(e){
-      assert.equal(e.message, "VM Exception while processing transaction: revert", "Error should be throwed");
+      assert.equal(e.message, "VM Exception while processing transaction: revert wrong vin length", "Error should be throwed");
     }
   });
 
@@ -56,7 +56,7 @@ contract('CarExchange', function(accounts) {
     try{
       await instant.register(accounts[1], "1HGBH41JXMN109188909");
     } catch(e){
-      assert.equal(e.message, "VM Exception while processing transaction: revert", "Error should be throwed");
+      assert.equal(e.message, "VM Exception while processing transaction: revert wrong vin length", "Error should be throwed");
     }
   });
 });

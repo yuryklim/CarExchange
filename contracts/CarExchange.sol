@@ -29,17 +29,17 @@ contract CarExchange {
 
     carAmount += 1; //  TODO: use SafeMath
     carDetails[carAmount] = Car(_owner, _vinNumber);
-    
+
     carOwner[convert(_vinNumber)] = _owner;
     ownerCars[_owner].push(carAmount);
-    
+
     emit Registered(_vinNumber, _owner);
   }
-  
+
   function ownerForCar(string _vinNumber) public view returns (address) {
       return carOwner[convert(_vinNumber)];
   }
-  
+
   function carsForOwner(address _owner) public view returns (uint256[]) {
       return ownerCars[_owner];
   }
