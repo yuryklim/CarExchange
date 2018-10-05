@@ -1,5 +1,32 @@
-var carExchange = artifacts.require("./CarExchange.sol");
+const carExchange = artifacts.require("./CarExchange.sol");
+const BearToken = artifacts.require('./BearToken.sol');
 contract('CarExchange', function(accounts) {
+  beforeEach(async () => {
+        sender = await carExchange.new();
+        bear = await BearToken.new();
+        await bear.transfer(accounts[1], 500);
+        await sender.addNewERC20Token('BEAR', bear.address);
+    });
+    it("should be able to transfer sender token to another wallet", async() => {
+      let accountA, accountB, accountC, accountD;
+      let amount = 5;
+
+      [accountA, accountB, accountC, accountD ] = accounts;
+      await bear.approve(sender.address, amount,{from: accountB});
+      await sender.register(accounts[1], "1HGBH41JXMN109186");
+      let balance = ((await  bear.balanceOf(accountB)).toString());
+      console.log(balance);
+      await sender.buy('BEAR', "1HGBH41JXMN109186", accountC, 5, {from: accountB});
+      let balance1 = ((await  bear.balanceOf(accountB)).toString());
+      console.log(balance1);
+      console.log(sender.carDetails.toString());
+      // await sender.buy('BEAR', "1HGBH41JXMN109186", accountD, 5, {from: accountA});
+      // let balance2 = ((await  bear.balanceOf(accountA)).toString());
+      // console.log(balance2);
+
+
+  });
+
   it("should be possible to register a new car", function() {
         var myCarExchangeInstance;
         return carExchange.deployed().then(function (instance) {
