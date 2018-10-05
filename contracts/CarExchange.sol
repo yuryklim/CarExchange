@@ -6,6 +6,7 @@ import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 contract CarExchange is Ownable {
   using SafeMath for uint256;
+
   address public owner;
 
   ERC20 public ERC20token;
@@ -63,6 +64,7 @@ contract CarExchange is Ownable {
       require(IndexOfCar(_vinNumber) != 0, "no car with such vin");
       require(ERC20token.balanceOf(from) >= _value, "buyer has no enough amount of tokens");
       delete (carDetails[IndexOfCar(_vinNumber)]);//remove car by _vinNumber from list of registered cars
+      delete (carOwner[convert(_vinNumber)]);//remove the address of registered car (new owner is able to register it again)
       require(ERC20token.transferFrom(from, _to, _value), "can not perform transferFrom");
       emit Bought(_vinNumber, _oldOwner, from, _value);
   }
@@ -75,9 +77,9 @@ contract CarExchange is Ownable {
       return ownerCars[_owner];
   }
   /**
-  * @dev add posibility to get index of car by vin
+  * @dev add posibility to get index of car in mapping carDetails by vin
   */
-  function IndexOfCar(string _vinNumber) public view returns (uint256) {
+  function IndexOfCar(string _vinNumber) private view returns (uint256) {
       for (uint256 i = 1; i < carAmount + 1; i++) {
         if (convert(carDetails[i].vinNumber) == convert(_vinNumber))
         return i;
