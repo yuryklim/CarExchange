@@ -39,7 +39,7 @@ contract CarExchange is Ownable {
   *_vinNumber is a Vehicle Identification Number and contains 17 characters (digits and capital letters)
   */
   function register(address _owner, string _vinNumber) public returns (bool){
-    require(_owner != address(0), "can not be 0");
+    require(_owner != address(0), "address can not be 0");
     require(bytes(_vinNumber).length == 17, "wrong vin length");
     require(carOwner[convert(_vinNumber)] == address(0), "vin is already registered");
 
@@ -62,7 +62,7 @@ contract CarExchange is Ownable {
       require(_value > 0, "amount of ERC20 tokens must be higher than zero");
       require(IndexOfCar(_vinNumber) != 0, "no car with such vin");
       require(ERC20token.balanceOf(from) >= _value, "buyer has no enough amount of tokens");
-      delete carDetails[IndexOfCar(_vinNumber)];//remove car by _vinNumber from list of registered cars
+      delete (carDetails[IndexOfCar(_vinNumber)]);//remove car by _vinNumber from list of registered cars
       require(ERC20token.transferFrom(from, _to, _value), "can not perform transferFrom");
       emit Bought(_vinNumber, _oldOwner, from, _value);
   }
