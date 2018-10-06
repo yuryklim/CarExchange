@@ -27,6 +27,15 @@ contract('car_exchange_buy', function(accounts) {
         assert.equal(balanceAfterBuyReceiver, 5, "not correct ballance after buy for receiver");
         assert.equal(buyCar.logs[0].event, "Bought", "Bought event should be emitted");
   });
+  it("should be able to register a car after it was bought", async() => {
+        let accountA, accountB, accountC, accountD;
+        [accountA, accountB, accountC, accountD ] = accounts;
+        let amount = 5;
+        await bear.approve(sender.address, amount, {from: accountB});
+        await sender.buy('BEAR', "1HGBH41JXMN109187", accountC, amount, {from: accountB});
+        let reqisterCar = await sender.register(accountB, "1HGBH41JXMN109187", {from: accountB});
+        assert.equal(reqisterCar.logs[0].event, "Registered", "Registered event should be emitted");
+  });
   it("should revert if we try to buy the car that was already bought", async() => {
     let accountA, accountB, accountC, accountD;
     [accountA, accountB, accountC, accountD ] = accounts;
