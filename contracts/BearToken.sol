@@ -8,20 +8,16 @@ import "../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol";
 /**
 * @title BearToken is a basic ERC20 Token
 */
-contract BearToken is StandardToken, Ownable{
+contract BearToken is DetailedERC20, StandardToken, Ownable{
 
     uint256 public totalSupply;
-    string public name;
-    string public symbol;
-    uint32 public decimals;
+  
 
     /**
     * @dev assign totalSupply to account creating this contract
     */
-    constructor() public {
-        symbol = "BEAR";
-        name = "BearToken";
-        decimals = 5;
+    constructor() DetailedERC20("BearToken", "BEAR", 5) public {
+
         totalSupply = 100000000000;
 
         owner = msg.sender;

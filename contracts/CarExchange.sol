@@ -1,18 +1,20 @@
 pragma solidity ^0.4.24;
 
-//  TODO: uze OpenZeppelin, implement as Ownable, use SafeMath for uint256
-import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
-import "openzeppelin-solidity/contracts/math/SafeMath.sol";
-import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
+import "../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
+import "../node_modules/openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
+import "./BearToken.sol";
 contract CarExchange is Ownable {
   using SafeMath for uint256;
 
   address public owner;
 
-  ERC20 public ERC20token;
+  BearToken public bearToken;
+
   struct Car {
     address carOwner;
     string vinNumber;
+    uint256 carPrice;
   }
 
   uint256 public carAmount;
@@ -20,15 +22,9 @@ contract CarExchange is Ownable {
   mapping (uint256 => Car) public carDetails;  //  we have only registered cars here
   mapping (address => uint256[]) private ownerCars;  //  owner => carIndexes[]
   mapping (bytes32 => address) private carOwner;
-  /**
-  * @dev list of all supported tokens for transfer
-  * @param string token symbol
-  * @param address contract address of token
-  */
-  mapping(bytes32 => address) public tokens;
 
   //EVENTS//
-  event Registered(string _vinNumber, address indexed _owner);
+  event Registered(string _vinNumber, address indexed _owner, uint256 indexed _carPrice);
   event Bought(string _vinNumber, address indexed _oldOwner, address indexed _newOwner, uint256 _value);
 //  event Listed(uint indexed _vinNumber, address indexed _carOwner, uint _value);
   constructor() public {
@@ -37,80 +33,86 @@ contract CarExchange is Ownable {
 
   /**
   * @dev function for registering a cars
-  *_vinNumber is a Vehicle Identification Number and contains 17 characters (digits and capital letters)
+  * @param _vinNumber Is a Vehicle Identification Number and contains 17 characters (digits and capital letters)
+  * @param _owner The address of person who owns the car
+  * @param _carPrice The price in tokens of the registered car
+  * @return A bool than registration of a new car was successful
   */
-  function register(address _owner, string _vinNumber) public returns (bool){
+  function register(address _owner, string _vinNumber, uint256 _carPrice) public returns (bool) {
+
     require(_owner != address(0), "address can not be 0");
+    require(_carPrice > 0, "price of car can not be 0");
     require(bytes(_vinNumber).length == 17, "wrong vin length");
-    require(carOwner[convert(_vinNumber)] == address(0), "vin is already registered");
+    require(carOwner[convertStringToBytes32(_vinNumber)] == address(0), "vin is already registered");
 
-    carAmount += 1; //  TODO: use SafeMath
-    carDetails[carAmount] = Car(_owner, _vinNumber);
+    carAmount += 1;
+    carDetails[carAmount] = Car(_owner, _vinNumber, _carPrice);
 
-    carOwner[convert(_vinNumber)] = _owner;
+    carOwner[convertStringToBytes32(_vinNumber)] = _owner;
     ownerCars[_owner].push(carAmount);
 
-    emit Registered(_vinNumber, _owner);
+    emit Registered(_vinNumber, _owner, _carPrice);
   }
   /**
   * @dev add function buy(...) for buying a car  by _vinNumber that is listed for sale
-  * @param symbol_ symbol for something - TODO: rest functions
+  * @param token The address of token that is using for buying a car
+  * @param _vinNumber Is a Vehicle Identification Number and contains 17 characters (digits and capital letters)
+  * @return A boolean that process of buying was successful
   */
-  function buy(bytes32 symbol_, string _vinNumber, address _to, uint256 _value) public returns (bool) {
-    /**
-     *  TODO
-     *  _to - no need in this. transfer tokens to this contract
-     * _value - no need. Find car by _vinNumber and transfer it's price in tokens
-     * symbol_ - remove. Use BearToken only
-     */
+  function buy(address token, string _vinNumber) public returns (bool) {
 
-      address contract_ = tokens[symbol_];  //  TODO: remove
-      address from = msg.sender; // TODO: no need. Storage pays with gas, but calls like msg.sender are free
-      ERC20token = ERC20(contract_);  //  TODO: remove
-      address _oldOwner = carOwner[convert(_vinNumber)];//address of car owner
-      require(_value > 0, "amount of ERC20 tokens must be higher than zero");  //  TODO: remove. transferFrom will fail if not enough
-      require(IndexOfCar(_vinNumber) != 0, "no car with such vin");
-<<<<<<< HEAD
-      require(ERC20token.balanceOf(from) >= _value, "buyer has no enough amount of tokens");
-      require(ERC20token.approve(from, _value), "allow to account from to spent tokens");
-=======
-      require(ERC20token.balanceOf(from) >= _value, "buyer has no enough amount of tokens"); //  TODO: remove. transferFrom will fail if not enough
->>>>>>> e63ac88c784c72fff2702937bdd11b2351ed6f0e
-      delete (carDetails[IndexOfCar(_vinNumber)]);//remove car by _vinNumber from list of registered cars
-      delete (carOwner[convert(_vinNumber)]);//remove the address of registered car (new owner is able to register it again)
-      require(ERC20token.transferFrom(from, _to, _value), "can not perform transferFrom");
-      emit Bought(_vinNumber, _oldOwner, from, _value);
+    bearToken = BearToken(token);
+
+    require(indexOfCar(_vinNumber) != 0, "no car with such vin");
+    require(bearToken.balanceOf(msg.sender) >= priceForCar(_vinNumber), "buyer has no enough amount of tokens");
+    require(bearToken.approve(msg.sender, priceForCar(_vinNumber)), "allow to account from to spent tokens");
+    require(bearToken.transferFrom(msg.sender, owner, priceForCar(_vinNumber)));
+
+    emit Bought(_vinNumber, carOwner[convertStringToBytes32(_vinNumber)], msg.sender, priceForCar(_vinNumber));
+
+    delete (carDetails[indexOfCar(_vinNumber)]);  //  remove car by _vinNumber from list of registered cars
+    delete (carOwner[convertStringToBytes32(_vinNumber)]);  //  remove the address of registered car (new owner is able to register it again)
   }
 
+  /**
+  * @dev add posibility to get address of car owner
+  * @param _vinNumber vinNumber of car
+  * @return An address of car owner
+  */
   function ownerForCar(string _vinNumber) public view returns (address) {
-      return carOwner[convert(_vinNumber)];
+    return carOwner[convertStringToBytes32(_vinNumber)];
   }
 
+  /**
+  * @dev add posibility to get indexes of car that belong to certain address
+  * @param _owner address of person who posess this car
+  * @return A uint256[] array of car indexes for certain address
+  */
   function carsForOwner(address _owner) public view returns (uint256[]) {
-      return ownerCars[_owner];
+    return ownerCars[_owner];
+  }
+
+  /**
+  * @dev add posibility to get price of car in mapping carDetails by vin
+  * @param _vinNumber vinNumber of car
+  * @return A uint256 price of car with this vinNumber in mapping carDetails
+  */
+  function priceForCar(string _vinNumber) public view returns (uint256) {
+    return carDetails[indexOfCar(_vinNumber)].carPrice;
   }
   /**
   * @dev add posibility to get index of car in mapping carDetails by vin
+  * @param _vinNumber vinNumber of car
+  * @return A uint256 index of car with this vinNumber in mapping carDetails
+  * If there no car with such vinNumber returns 0
   */
-  function IndexOfCar(string _vinNumber) private view returns (uint256) {
-      for (uint256 i = 1; i < carAmount + 1; i++) {
-        if (convert(carDetails[i].vinNumber) == convert(_vinNumber))
+  function indexOfCar(string _vinNumber) private view returns (uint256) {
+    for (uint256 i = 1; i < carAmount + 1; i++) {
+      if (convertStringToBytes32(carDetails[i].vinNumber) == convertStringToBytes32(_vinNumber))
         return i;
       }
-      return 0;
+        return 0;
   }
-
-  /**
-  * @dev add address of token to list of supported tokens using
-  * token symbol as identifier in mapping
-  * TODO: remove as other unnecessary functional
-  */
-  function addNewERC20Token(bytes32 symbol_, address address_) public onlyOwner returns (bool) {
-      tokens[symbol_] = address_;
-      return true;
-  }
-
-
 
   // list a car for sale by _vinNumber
   /* function list(uint _vinNumber, uint _value) public returns (bool success){
@@ -122,8 +124,12 @@ contract CarExchange is Ownable {
 
   } */
 
-//  TODO: rename to express, what it does
-  function convert(string key) private pure returns (bytes32 ret) {
+  /**
+  * @dev add posibility to conbert string to bytes32
+  * @param key Any string
+  * @return A bytes32
+  */
+  function convertStringToBytes32(string key) private pure returns (bytes32 ret) {
     require(bytes(key).length <= 32);
 
     assembly {
