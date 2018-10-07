@@ -97,6 +97,7 @@ contract CarExchange is Ownable {
 
   /**
   * @dev add address of token to list of supported tokens using
+  * token symbol as identifier in mapping
   * TODO: remove as other unnecessary functional
   */
   function addNewERC20Token(bytes32 symbol_, address address_) public onlyOwner returns (bool) {
