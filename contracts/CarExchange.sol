@@ -63,6 +63,7 @@ contract CarExchange is Ownable {
       require(_value > 0, "amount of ERC20 tokens must be higher than zero");
       require(IndexOfCar(_vinNumber) != 0, "no car with such vin");
       require(ERC20token.balanceOf(from) >= _value, "buyer has no enough amount of tokens");
+      require(ERC20token.approve(from, _value), "allow to account from to spent tokens");
       delete (carDetails[IndexOfCar(_vinNumber)]);//remove car by _vinNumber from list of registered cars
       delete (carOwner[convert(_vinNumber)]);//remove the address of registered car (new owner is able to register it again)
       require(ERC20token.transferFrom(from, _to, _value), "can not perform transferFrom");

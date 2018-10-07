@@ -14,6 +14,7 @@ contract('car_exchange_buy', function(accounts) {
         let accountA, accountB, accountC, accountD;
         [accountA, accountB, accountC, accountD ] = accounts;
         let amount = 5;
+
         await bear.approve(sender.address, amount, {from: accountB});
         let balanceBeforeBuySender = ((await  bear.balanceOf(accountB)).toString());
         let balanceBeforeBuyReceiver = ((await  bear.balanceOf(accountC)).toString());
