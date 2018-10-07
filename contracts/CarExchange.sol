@@ -54,16 +54,28 @@ contract CarExchange is Ownable {
   }
   /**
   * @dev add function buy(...) for buying a car  by _vinNumber that is listed for sale
+  * @param symbol_ symbol for something - TODO: rest functions
   */
   function buy(bytes32 symbol_, string _vinNumber, address _to, uint256 _value) public returns (bool) {
-      address contract_ = tokens[symbol_];
-      address from = msg.sender;
-      ERC20token = ERC20(contract_);
+    /**
+     *  TODO
+     *  _to - no need in this. transfer tokens to this contract
+     * _value - no need. Find car by _vinNumber and transfer it's price in tokens
+     * symbol_ - remove. Use BearToken only
+     */
+
+      address contract_ = tokens[symbol_];  //  TODO: remove
+      address from = msg.sender; // TODO: no need. Storage pays with gas, but calls like msg.sender are free
+      ERC20token = ERC20(contract_);  //  TODO: remove
       address _oldOwner = carOwner[convert(_vinNumber)];//address of car owner
-      require(_value > 0, "amount of ERC20 tokens must be higher than zero");
+      require(_value > 0, "amount of ERC20 tokens must be higher than zero");  //  TODO: remove. transferFrom will fail if not enough
       require(IndexOfCar(_vinNumber) != 0, "no car with such vin");
+<<<<<<< HEAD
       require(ERC20token.balanceOf(from) >= _value, "buyer has no enough amount of tokens");
       require(ERC20token.approve(from, _value), "allow to account from to spent tokens");
+=======
+      require(ERC20token.balanceOf(from) >= _value, "buyer has no enough amount of tokens"); //  TODO: remove. transferFrom will fail if not enough
+>>>>>>> e63ac88c784c72fff2702937bdd11b2351ed6f0e
       delete (carDetails[IndexOfCar(_vinNumber)]);//remove car by _vinNumber from list of registered cars
       delete (carOwner[convert(_vinNumber)]);//remove the address of registered car (new owner is able to register it again)
       require(ERC20token.transferFrom(from, _to, _value), "can not perform transferFrom");
@@ -91,6 +103,7 @@ contract CarExchange is Ownable {
   /**
   * @dev add address of token to list of supported tokens using
   * token symbol as identifier in mapping
+  * TODO: remove as other unnecessary functional
   */
   function addNewERC20Token(bytes32 symbol_, address address_) public onlyOwner returns (bool) {
       tokens[symbol_] = address_;
@@ -109,7 +122,7 @@ contract CarExchange is Ownable {
 
   } */
 
-
+//  TODO: rename to express, what it does
   function convert(string key) private pure returns (bytes32 ret) {
     require(bytes(key).length <= 32);
 
