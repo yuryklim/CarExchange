@@ -60,4 +60,14 @@ contract('car_exchange_register', function(accounts) {
       assert.equal(e.message, "VM Exception while processing transaction: revert address can not be 0", "Error should be throwed");
     }
   });
+  it("should revert if we try to register the car with the carPrice 0", async() => {
+    sender = await carExchange.new();
+    let accountA, accountB, accountC, accountD;
+    [accountA, accountB, accountC, accountD] = accounts;
+    try{
+      await sender.register(accountD, "1HGBH41JXMN109188", 0);
+    } catch(e){
+      assert.equal(e.message, "VM Exception while processing transaction: revert price of car can not be 0", "Error should be throwed");
+    }
+  });
 });

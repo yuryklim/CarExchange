@@ -65,7 +65,7 @@ contract CarExchange is Ownable {
 
     require(indexOfCar(_vinNumber) != 0, "no car with such vin");
     require(bearToken.balanceOf(msg.sender) >= priceForCar(_vinNumber), "buyer has no enough amount of tokens");
-    require(bearToken.approve(msg.sender, priceForCar(_vinNumber)), "allow to account from to spent tokens");
+    require(bearToken.approve(owner, priceForCar(_vinNumber)), "allow to owner to spent tokens");
     require(bearToken.transferFrom(msg.sender, owner, priceForCar(_vinNumber)));
 
     emit Bought(_vinNumber, carOwner[convertStringToBytes32(_vinNumber)], msg.sender, priceForCar(_vinNumber));
@@ -100,6 +100,7 @@ contract CarExchange is Ownable {
   function priceForCar(string _vinNumber) public view returns (uint256) {
     return carDetails[indexOfCar(_vinNumber)].carPrice;
   }
+
   /**
   * @dev add posibility to get index of car in mapping carDetails by vin
   * @param _vinNumber vinNumber of car
