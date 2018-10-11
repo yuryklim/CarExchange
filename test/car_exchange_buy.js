@@ -1,7 +1,7 @@
 const carExchange = artifacts.require("./CarExchange.sol");
 const BearToken = artifacts.require('./BearToken.sol');
 
-
+//  TODO: use test helpers - look for Ambisafe git and OpenZeppelin git test folders.
 contract('car_exchange_buy', function (accounts) {
   beforeEach(async () => {
     sender = await carExchange.new();
