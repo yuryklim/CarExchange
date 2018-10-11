@@ -34,6 +34,7 @@ contract('car_exchange_register', function (accounts) {
     sender = await carExchange.new();
     let accountA, accountB, accountC, accountD;
     [accountA, accountB, accountC, accountD] = accounts;
+    //  TODO:  please, reimplement using expectThrow helper in all places
     try {
       await sender.register(accountB, "1HGBH41JXMN", 5);
     } catch (e) {

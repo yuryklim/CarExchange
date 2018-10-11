@@ -4,6 +4,7 @@ const BearToken = artifacts.require('./BearToken.sol');
 //  TODO: use test helpers - look for Ambisafe git and OpenZeppelin git test folders.
 contract('car_exchange_buy', function (accounts) {
   beforeEach(async () => {
+    //  TODO: why name is sender? Rename, please
     sender = await carExchange.new();
     bear = await BearToken.new();
     await bear.transfer(accounts[1], 500);
