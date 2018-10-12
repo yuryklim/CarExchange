@@ -20,6 +20,8 @@ contract CarExchange is Ownable {
   uint256 public carAmount;
   //  use explicit uint256
   mapping (uint256 => Car) public carDetails;  //  we have only registered cars here
+  //  IVAN: here we have a problem, address => {1,  2,  5} for example, car with index 2 was bought
+  //  How to remove this index 2 from this array uint256[]?
   mapping (address => uint256[]) private ownerCars;  //  owner => carIndexes[]
   mapping (bytes32 => address) private carOwner;
 
@@ -53,6 +55,7 @@ contract CarExchange is Ownable {
 
     emit Registered(_vinNumber, _owner, _carPrice);
   }
+
   /**
   * @dev add function buy(...) for buying a car  by _vinNumber that is listed for sale
   * @param token The address of token that is using for buying a car
@@ -65,6 +68,9 @@ contract CarExchange is Ownable {
 
     require(indexOfCar(_vinNumber) != 0, "no car with such vin");
     require(bearToken.balanceOf(msg.sender) >= priceForCar(_vinNumber), "buyer has no enough amount of tokens");
+
+    //  IVAN: here we have a problem with transactions which can perform simultaneously and our contract
+    //  will get 2 * carPrice amount of tokens or even more:)
     require(bearToken.approve(owner, priceForCar(_vinNumber)), "allow to owner to spent tokens");
     require(bearToken.transferFrom(msg.sender, owner, priceForCar(_vinNumber)));
 
@@ -89,6 +95,7 @@ contract CarExchange is Ownable {
   * @return A uint256[] array of car indexes for certain address
   */
   function carsForOwner(address _owner) public view returns (uint256[]) {
+    //  IVAN: not correct return after car was bought: {1, 2,  5}
     return ownerCars[_owner];
   }
 
