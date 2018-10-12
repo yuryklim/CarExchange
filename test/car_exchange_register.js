@@ -1,10 +1,11 @@
-const { expectThrow } = require ('../node_modules/openzeppelin-solidity/test/helpers/expectThrow');
-const { EVMRevert } = require ('../node_modules/openzeppelin-solidity/test/helpers/EVMRevert');
+const {
+  expectThrow
+} = require('../node_modules/openzeppelin-solidity/test/helpers/expectThrow');
+const {
+  EVMRevert
+} = require('../node_modules/openzeppelin-solidity/test/helpers/EVMRevert');
 
 const CarExchange = artifacts.require("./CarExchange.sol");
-
-//  TODO: add empty lines, tabs
-//  IVAN: empty lines, tabs were added
 
 contract('car_exchange_register', function (accounts) {
   beforeEach(async () => {
@@ -31,21 +32,20 @@ contract('car_exchange_register', function (accounts) {
   it("should revert if we try to register the car with the vinNumber that already exists", async () => {
     let accountA, accountB, accountC, accountD;
     [accountA, accountB, accountC, accountD] = accounts;
-    await carExchange.register(accountA,  "1HGBH41JXMN109188",  5);
+    await carExchange.register(accountA, "1HGBH41JXMN109188", 5);
     await expectThrow(
-      carExchange.register(accountC,  "1HGBH41JXMN109188",  5),
-        EVMRevert,
+      carExchange.register(accountC, "1HGBH41JXMN109188", 5),
+      EVMRevert,
     );
   });
 
   it("should revert if we try to register the car with the vinNumber that is less then 17 characters", async () => {
     let accountA, accountB, accountC, accountD;
     [accountA, accountB, accountC, accountD] = accounts;
-    //  TODO:  please, reimplement using expectThrow helper in all places
-    //  IVAN: reimplement using expectThrow helper in all places was done
+
     await expectThrow(
-      carExchange.register(accountC,  "1HGBH41JXMN1091",  5),
-        EVMRevert,
+      carExchange.register(accountC, "1HGBH41JXMN1091", 5),
+      EVMRevert,
     );
   });
 
@@ -53,8 +53,8 @@ contract('car_exchange_register', function (accounts) {
     let accountA, accountB, accountC, accountD;
     [accountA, accountB, accountC, accountD] = accounts;
     await expectThrow(
-      carExchange.register(accountC,  "1HGBH41JXMN10918899",  5),
-        EVMRevert,
+      carExchange.register(accountC, "1HGBH41JXMN10918899", 5),
+      EVMRevert,
     );
   });
 
@@ -62,8 +62,8 @@ contract('car_exchange_register', function (accounts) {
     let accountA, accountB, accountC, accountD;
     [accountA, accountB, accountC, accountD] = accounts;
     await expectThrow(
-      carExchange.register(0x0,  "2HGBH41JXMN109188",  5),
-        EVMRevert,
+      carExchange.register(0x0, "2HGBH41JXMN109188", 5),
+      EVMRevert,
     );
   });
 
@@ -71,8 +71,8 @@ contract('car_exchange_register', function (accounts) {
     let accountA, accountB, accountC, accountD;
     [accountA, accountB, accountC, accountD] = accounts;
     await expectThrow(
-      carExchange.register(accountC,  "3HGBH41JXMN109188",  0),
-        EVMRevert,
+      carExchange.register(accountC, "3HGBH41JXMN109188", 0),
+      EVMRevert,
     );
   });
 });

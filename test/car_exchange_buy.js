@@ -1,8 +1,12 @@
-const { expectThrow } = require ('../node_modules/openzeppelin-solidity/test/helpers/expectThrow');
-const { EVMRevert } = require ('../node_modules/openzeppelin-solidity/test/helpers/EVMRevert');
+const {
+  expectThrow
+} = require('../node_modules/openzeppelin-solidity/test/helpers/expectThrow');
+const {
+  EVMRevert
+} = require('../node_modules/openzeppelin-solidity/test/helpers/EVMRevert');
 
-const CarExchange = artifacts.require ("./CarExchange.sol");
-const BearToken = artifacts.require ('./BearToken.sol');
+const CarExchange = artifacts.require("./CarExchange.sol");
+const BearToken = artifacts.require('./BearToken.sol');
 
 //  TODO: use test helpers - look for Ambisafe git and OpenZeppelin git test folders.
 //  IVAN:
@@ -52,21 +56,14 @@ contract('car_exchange_buy', function (accounts) {
     await bearToken.approve(carExchange.address, 10, {
       from: accountB
     });
-    await carExchange.buy(bearToken.address,  "1HGBH41JXMN109187", {
+    await carExchange.buy(bearToken.address, "1HGBH41JXMN109187", {
       from: accountB
     });
     await expectThrow(
-      carExchange.buy(bearToken.address,  "1HGBH41JXMN109187", {
+      carExchange.buy(bearToken.address, "1HGBH41JXMN109187", {
         from: accountB
-        }),
-        EVMRevert,
+      }),
+      EVMRevert,
     );
-    // try {
-    //   await carExchange.buy( bearToken.address, "1HGBH41JXMN109187", {
-    //     from: accountB
-    //   });
-    // } catch (e) {
-    //   assert.equal(e.message, "VM Exception while processing transaction: revert no car with such vin", "Error should be throwed");
-    // }
   });
 });
