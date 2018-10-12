@@ -37,7 +37,7 @@ contract CarExchange is Ownable {
   * @param _vinNumber Is a Vehicle Identification Number and contains 17 characters (digits and capital letters)
   * @param _owner The address of person who owns the car
   * @param _carPrice The price in tokens of the registered car
-  * @return A bool than registration of a new car was successful
+  * @return A bool that registration of a new car was successful
   */
   function register(address _owner, string _vinNumber, uint256 _carPrice) public returns (bool) {
     require(_owner != address(0), "address can not be 0");
