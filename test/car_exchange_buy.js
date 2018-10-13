@@ -10,7 +10,7 @@ const CarExchange = artifacts.require("./CarExchange.sol");
 const BearToken = artifacts.require('./BearToken.sol');
 
 //  TODO: use test helpers - look for Ambisafe git and OpenZeppelin git test folders.
-//  IVAN:
+//  IVAN: test helpers were used from openzeppelin
 contract('car_exchange_buy', function (accounts) {
   beforeEach(async () => {
     //  TODO: why name is sender? Rename, please
@@ -68,7 +68,7 @@ contract('car_exchange_buy', function (accounts) {
     );
   });
 });
-=======
+
 // const { expectThrow } = require ('../node_modules/openzeppelin-solidity/test/helpers/expectThrow');
 // const { EVMRevert } = require ('../node_modules/openzeppelin-solidity/test/helpers/EVMRevert');
 //
@@ -146,4 +146,3 @@ contract('car_exchange_buy', function (accounts) {
 //     );
 //   });
 // });
-

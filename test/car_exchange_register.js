@@ -17,17 +17,16 @@ contract('car_exchange_register', function (accounts) {
     let accountA, accountB, accountC, accountD;
     [accountA, accountB, accountC, accountD] = accounts;
     let registerCar = await carExchange.register(accountA, "1HGBH41JXMN109186", 5);
-    assert.equal(await carExchange.ownerForCar("1HGBH41JXMN109186"), accountA, "accountA is not owner");
     assert.equal(registerCar.logs[0].event, "Registered", "Registered event should be emitted");
   });
 
   it("should be possible to register a new car with the same account", async () => {
     let accountA, accountB, accountC, accountD;
     [accountA, accountB, accountC, accountD] = accounts;
-    await carExchange.register(accountA, "7HGBH41JXMN109186", 5);
-    await carExchange.register(accountA, "8HGBH41JXMN109187", 5);
-    assert.equal(await carExchange.ownerForCar("7HGBH41JXMN109186"), accountA, "accountA is not owner");
-    assert.equal(await carExchange.ownerForCar("8HGBH41JXMN109187"), accountA, "accountA is not owner");
+    let registerCarFirst = await carExchange.register(accountA, "7HGBH41JXMN109186", 5);
+    assert.equal(registerCarFirst.logs[0].event, "Registered", "Registered event should be emitted");
+    let registerCarSecond = await carExchange.register(accountA, "8HGBH41JXMN109187", 5);
+    assert.equal(registerCarSecond.logs[0].event, "Registered", "Registered event should be emitted");
   });
 
   it("should revert if we try to register the car with the vinNumber that already exists", async () => {
@@ -77,7 +76,7 @@ contract('car_exchange_register', function (accounts) {
     );
   });
 });
-=======
+
 // const { expectThrow } = require ('../node_modules/openzeppelin-solidity/test/helpers/expectThrow');
 // const { EVMRevert } = require ('../node_modules/openzeppelin-solidity/test/helpers/EVMRevert');
 //
@@ -167,4 +166,3 @@ contract('car_exchange_register', function (accounts) {
 //     );
 //   });
 // });
-
