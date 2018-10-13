@@ -18,20 +18,35 @@ contract('car_exchange_buy', function (accounts) {
     carExchange = await CarExchange.new();
     bearToken = await BearToken.new();
     await bearToken.transfer(accounts[1], 500);
+    await bearToken.transfer(accounts[2], 500);
     await carExchange.register(accounts[1], "1HGBH41JXMN109186", 5);
     await carExchange.register(accounts[1], "1HGBH41JXMN109188", 5);
     await carExchange.register(accounts[3], "1HGBH41JXMN109187", 5);
+    await bearToken.approve(await carExchange.getOwner(), 15, {
+      from: accounts[2]
+    });
   });
 
   it("should be able to buy a new car by vin and send token", async () => {
     let accountA, accountB, accountC, accountD;
     [accountA, accountB, accountC, accountD] = accounts;
-    await bearToken.approve(carExchange.address, 5, {
-      from: accountB
+    console.log(await carExchange.getOwner());
+    console.log(accounts[0]);
+    console.log(accounts[1]);
+    console.log(accounts[2]);
+    console.log(accountB);
+    console.log(await bearToken.allowance(carExchange.address, accountB));
+    console.log(await bearToken.allowance(accounts[1], accountB));
+    console.log(await bearToken.allowance(accounts[2], accountB));
+    await bearToken.approve(carExchange.address, 15, {
+      from: accounts[2]
     });
+    console.log(await bearToken.allowance(carExchange.address, accountB));
+    console.log(await bearToken.allowance(accounts[1], accountB));
+    console.log(await bearToken.allowance(accounts[2], accountB));
     //console.log((await  bear.balanceOf(sender.address)).toString());
     let buyCar = await carExchange.buy(bearToken.address, "1HGBH41JXMN109187", {
-      from: accountB
+      from: accounts[2]
     });
     assert.equal(buyCar.logs[0].event, "Bought", "Bought event should be emitted");
   });

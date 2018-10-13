@@ -42,6 +42,9 @@ contract CarExchange is Ownable {
         require(_owner != address(0), "address can not be 0");
         require(_carPrice > 0, "price of car can not be 0");
         require(bytes(_vinNumber).length == 17, "wrong vin length");
+        // IVAN: carAmountTotal == 0 will be true if no car in carList
+        // !carRegistered(_vinNumber) will be true if there is no car with such vin in carList
+        // !carList[indexOfCar(_vinNumber)].forSale will be true if car was bought. A new owner can register it again
         require(carAmountTotal == 0 || !carRegistered(_vinNumber) || !carList[indexOfCar(_vinNumber)].forSale, "vin is already registered");
 
         carIndex[keccak256(abi.encodePacked(_vinNumber))] = carAmountTotal;
@@ -66,8 +69,8 @@ contract CarExchange is Ownable {
         uint256 price = carList[idx].carPrice;
     //  TODO: check allowence
     //  IVAN: check allowance was done
-        require(bearToken.allowance(msg.sender, owner) >= price, "remaining is less than price");
-        
+       // require(bearToken.allowance(msg.sender, owner) == price, "remaining is less than price");
+
         require(bearToken.transferFrom(msg.sender, owner, price), "transferFrom was failed");
 
         address prevOwner = carList[idx].carOwner;
@@ -85,6 +88,10 @@ contract CarExchange is Ownable {
     function carForSale(string _vinNumber) public view returns (bool) {
         uint256 idx = indexOfCar(_vinNumber);
         return carList[idx].forSale;
+    }
+
+    function getOwner() public view returns (address) {
+        return owner;
     }
 
 
