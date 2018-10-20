@@ -5,6 +5,10 @@ import "../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "../node_modules/openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 import "./BearToken.sol";
+/**
+ * @title CarExchange
+ * @dev The CarExchange contract provides car registration and posibility to buy a car
+ */
 contract CarExchange is Ownable {
     using SafeMath for uint256;
     address public owner;
@@ -19,6 +23,7 @@ contract CarExchange is Ownable {
 
     uint256 public carAmountTotal;  // sold + unsold
     Car[] public carList;  // sold + unsold
+    
     mapping(bytes32 => uint256) public carIndex; //  index in carList
     mapping(address => uint256[]) public carIndexesForOwner;  //  address => indexes[] //  TODO: implement
 
@@ -50,27 +55,30 @@ contract CarExchange is Ownable {
         carIndex[keccak256(abi.encodePacked(_vinNumber))] = carAmountTotal;
         carAmountTotal = carAmountTotal.add(1);
         carList.push(Car(_owner, _vinNumber, _carPrice, true));
-
+          
         emit Registered(_vinNumber, _owner, _carPrice);
     }
 
   /**
   * @dev add function buy(...) for buying a car  by _vinNumber that is listed for sale
   * @param token The address of token that is using for buying a car
+  * @param exchange The address of CarExchange contract
   * @param _vinNumber Is a Vehicle Identification Number and contains 17 characters (digits and capital letters)
   * @return A boolean that process of buying was successful
   */
-    function buy(address token, string _vinNumber) public returns (bool) {
+    //  IVAN: I have added address exchange in order to get posibility to check allowance
+    function buy(address token, address exchange, string _vinNumber) public returns (bool) {
         bearToken = BearToken(token);
 
         uint256 idx = indexOfCar(_vinNumber);
         require(carList[idx].forSale, "car is sold");
     
         uint256 price = carList[idx].carPrice;
+        
     //  TODO: check allowence
     //  IVAN: check allowance was done
-       // require(bearToken.allowance(msg.sender, owner) == price, "remaining is less than price");
-
+        require(bearToken.allowance(msg.sender, exchange) >= price, "remaining is less than price");
+    //  IVAN: tokens go to address of contract CarExchange owner (owner in our case)
         require(bearToken.transferFrom(msg.sender, owner, price), "transferFrom was failed");
 
         address prevOwner = carList[idx].carOwner;
@@ -81,25 +89,30 @@ contract CarExchange is Ownable {
     }
 
   // HELPERS
+
+  /**
+  * @dev function for check if car is registered by vin
+  * @param _vinNumber Is a Vehicle Identification Number
+  * @return A bolean that car is registered
+  */
     function carRegistered(string _vinNumber) public view returns (bool) {
         return stringsEqual(carList[carIndex[keccak256(abi.encodePacked(_vinNumber))]].vinNumber, _vinNumber);
     }
 
+  /**
+  * @dev function for check if car is for sale by vin
+  * @param _vinNumber Is a Vehicle Identification Number
+  * @return A bolean that car is for sale
+  */
     function carForSale(string _vinNumber) public view returns (bool) {
         uint256 idx = indexOfCar(_vinNumber);
         return carList[idx].forSale;
     }
 
-    function getOwner() public view returns (address) {
-        return owner;
-    }
-
-
   /**
-  * @dev add posibility to get index of car in mapping carDetails by vin
+  * @dev add posibility to get index of car in carList by vin
   * @param _vinNumber vinNumber of car
-  * @return A uint256 index of car with this vinNumber in mapping carDetails
-  * If there no car with such vinNumber returns 0
+  * @return A uint256 index of car with this vinNumber in carList
   */
     function indexOfCar(string _vinNumber) public view returns (uint256) {
         uint256 idx = carIndex[keccak256(abi.encodePacked(_vinNumber))];
@@ -121,7 +134,12 @@ contract CarExchange is Ownable {
           ret := mload(add(key, 32))
         }
     }
-
+  /**
+  * @dev add posibility to check if string a equal to string b
+  * @param a Any string
+  * @param b Any string
+  * @return A bolean that string a is equal to string b
+  */
     function stringsEqual (string a, string b) private pure returns (bool){
         return keccak256(abi.encodePacked(a)) == keccak256(abi.encodePacked(b));
     }
